@@ -1,0 +1,45 @@
+name: Daily data refresh
+
+# This is the automation the dashboard relies on:
+#   1. Runs generate_daily_data.py every day.
+#   2. The script adds "today" to the dataset and drops the oldest day
+#      (rolling 120-day window), then writes data/feedback_data.json + .csv.
+#   3. If those files changed, this workflow commits them back to main.
+#   4. If the repo is deployed with GitHub Pages, the live dashboard
+#      picks up the new data on next page load -- no manual step required.
+#
+# You can also trigger it by hand from the Actions tab (workflow_dispatch)
+# to demo the refresh live, e.g. in an interview.
+
+on:
+  schedule:
+    - cron: "0 7 * * *"   # 07:00 UTC daily
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  refresh-data:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Generate today's data
+        run: python data/generate_daily_data.py
+
+      - name: Commit changes if any
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/feedback_data.json data/feedback_data.csv
+          if git diff --cached --quiet; then
+            echo "No data changes today."
+          else
+            git commit -m "chore: daily feedback data refresh"
+            git push
+          fi
