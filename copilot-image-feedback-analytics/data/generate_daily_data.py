@@ -151,7 +151,12 @@ def build_day(d: date) -> DayRecord:
     )
 
 
- def load_existing() -> list: if JSON_PATH.exists(): with open(JSON_PATH, "r") as f: payload = json.load(f) return payload.get("days", []) return []
+def load_existing() -> list:
+    if JSON_PATH.exists():
+        with open(JSON_PATH, "r") as f:
+            payload = json.load(f)
+            return payload.get("days", [])
+    return []
 
 
 def save(records: list) -> None:
