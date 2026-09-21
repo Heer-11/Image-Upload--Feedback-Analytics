@@ -1,7 +1,0 @@
-# generate_daily_data.py only uses the Python standard library
-# (argparse, csv, json, random, dataclasses, datetime, pathlib),
-# so there is nothing to install for the data pipeline itself.
-#
-# This file is kept so the GitHub Action / CI has a conventional
-# place to pin versions if you extend the script later (e.g. pandas,
-# numpy, or a real DB connector for pulling live feedback).
